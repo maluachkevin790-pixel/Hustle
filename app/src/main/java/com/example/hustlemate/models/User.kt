@@ -1,4 +1,4 @@
-package com.hustlemate.app.model
+package com.example.hustlemate.models
 
 data class User(
     val id: String = "",

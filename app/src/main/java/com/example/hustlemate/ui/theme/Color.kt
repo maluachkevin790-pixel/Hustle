@@ -1,4 +1,4 @@
-package com.hustlemate.app.ui.theme
+package com.example.hustlemate.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

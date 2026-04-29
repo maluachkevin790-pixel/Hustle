@@ -1,6 +1,6 @@
-package com.hustlemate.app.model
+package com.example.hustlemate.models
 
-data class CartItem(
+data class Cart(
     val product: Product,
-    val quantity: Int = 1
+    var quantity: Int = 1
 )

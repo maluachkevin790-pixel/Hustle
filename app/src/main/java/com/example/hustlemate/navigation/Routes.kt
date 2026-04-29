@@ -1,23 +1,24 @@
-package com.hustlemate.app.navigation
-sealed class Routes(val route: String) {
+package com.example.hustlemate.navigation
 
-    // Auth
-    object Login : Routes("login")
-    object Register : Routes("register")
+object Routes {
+    const val SPLASH = "splash"
+    const val LOGIN = "login"
+    const val REGISTER = "register"
 
-    // Customer
-    object Home : Routes("home")
-    object ProductDetails : Routes("product_details/{productId}") {
-        fun createRoute(productId: String) = "product_details/$productId"
-    }
-    object Cart : Routes("cart")
-    object Checkout : Routes("checkout")
-    object OrderConfirmation : Routes("order_confirmation/{orderId}") {
-        fun createRoute(orderId: String) = "order_confirmation/$orderId"
-    }
-    object MyOrders : Routes("my_orders")
+    const val HOME = "home"
 
-    // Seller
-    object SellerDashboard : Routes("seller_dashboard")
-    object AddProduct : Routes("add_product")
+    // 🔥 IMPORTANT: include productId
+    const val PRODUCT_DETAILS = "product_details/{productId}"
+
+    const val CART = "cart"
+    const val CHECKOUT = "checkout"
+    const val PAYMENT = "payment"
+    const val ORDER_CONFIRMATION = "order_confirmation"
+
+    const val SEARCH = "search"
+    const val WISHLIST = "wishlist"
+
+    const val PROFILE = "profile"
+    const val EDIT_PROFILE = "edit_profile"
+    const val SETTINGS = "settings"
 }

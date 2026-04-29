@@ -1,4 +1,4 @@
-package com.hustlemate.app.screens
+package com.example.hustlemate.ui.theme.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -7,9 +7,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.hustlemate.app.components.AppButton
-import com.hustlemate.app.components.AppTextField
-import com.hustlemate.app.ui.theme.Background
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+
+import com.example.hustlemate.components.AppButton
+import com.example.hustlemate.components.AppTextField
+import com.example.hustlemate.ui.theme.Background
+import com.example.hustlemate.ui.theme.HustleMateTheme
 
 @Composable
 fun RegisterScreen(navController: NavController) {
@@ -46,16 +52,18 @@ fun RegisterScreen(navController: NavController) {
             label = "Email"
         ) { email = it }
 
-        // 🔒 Password
+        // 🔒 Password (FIXED - hidden text)
         AppTextField(
             value = password,
-            label = "Password"
+            label = "Password",
         ) { password = it }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         // 🧑‍💼 Seller Option
-        Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Checkbox(
                 checked = isSeller,
                 onCheckedChange = { isSeller = it }
@@ -80,4 +88,12 @@ fun RegisterScreen(navController: NavController) {
         }
     }
 }
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun RegisterScreenPreview() {
+    val navController = rememberNavController()
 
+    HustleMateTheme {
+        RegisterScreen(navController)
+    }
+}

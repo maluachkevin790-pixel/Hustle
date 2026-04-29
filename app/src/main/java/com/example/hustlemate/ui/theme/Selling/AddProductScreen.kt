@@ -1,4 +1,4 @@
-package com.example.hustlemate.ui.theme.Customers
+package com.example.hustlemate.ui.theme.Selling
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -14,7 +14,6 @@ import com.example.hustlemate.components.AppTextField
 import com.example.hustlemate.ui.theme.Background
 import com.example.hustlemate.ui.theme.HustleMateTheme
 import com.example.hustlemate.ui.theme.TextPrimary
-import com.example.hustlemate.ui.theme.auth.RegisterScreen
 
 @Composable
 fun AddProductScreen(navController: NavController) {

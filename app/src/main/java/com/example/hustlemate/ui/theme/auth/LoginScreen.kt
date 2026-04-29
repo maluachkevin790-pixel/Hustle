@@ -1,15 +1,28 @@
-package com.hustlemate.app.screens
+package com.example.hustlemate.ui.theme.auth
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.hustlemate.app.components.AppButton
-import com.hustlemate.app.components.AppTextField
-import com.hustlemate.app.ui.theme.Background
+import androidx.navigation.compose.rememberNavController
+import com.example.hustlemate.components.AppButton
+import com.example.hustlemate.components.AppTextField
+import com.example.hustlemate.ui.theme.Background
+import com.example.hustlemate.ui.theme.Customers.HomeScreen
+import com.example.hustlemate.ui.theme.HustleMateTheme
+
+@Preview(showBackground = true)
+@Composable
+fun HomeScreenPreview() {
+    val navController = rememberNavController()
+    HustleMateTheme {
+        HomeScreen(navController)
+    }
+}
 
 @Composable
 fun LoginScreen(navController: NavController) {
@@ -35,14 +48,16 @@ fun LoginScreen(navController: NavController) {
         // 📧 Email
         AppTextField(
             value = email,
-            label = "Email"
-        ) { email = it }
+            label = "Email",
+            onChange = { email = it }
+        )
 
         // 🔒 Password
         AppTextField(
             value = password,
-            label = "Password"
-        ) { password = it }
+            label = "Password",
+            onChange = { password = it }
+        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -61,4 +76,3 @@ fun LoginScreen(navController: NavController) {
         }
     }
 }
-

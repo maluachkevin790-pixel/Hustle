@@ -1,4 +1,4 @@
-package com.example.hustlemate.ui.theme.Orders
+package com.example.hustlemate.ui.theme.Customers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
