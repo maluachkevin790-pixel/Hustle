@@ -1,19 +1,21 @@
-package com.hustlemate.app.screens
+package com.example.hustlemate.ui.theme.Orders
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.hustlemate.components.AppButton
+import com.example.hustlemate.ui.theme.Background
+import com.example.hustlemate.ui.theme.HustleMateTheme
 
-import com.hustlemate.app.components.*
-import com.hustlemate.app.ui.theme.*
+
 @Composable
 fun OrderConfirmationScreen(navController: NavController, orderId: String) {
 
@@ -38,5 +40,15 @@ fun OrderConfirmationScreen(navController: NavController, orderId: String) {
         AppButton("View Orders") {
             navController.navigate("my_orders")
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun OrderConfirmationScreenPreview() {
+    val navController = rememberNavController()
+
+    HustleMateTheme {
+        OrderConfirmationScreen(navController, "12345")
     }
 }

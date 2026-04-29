@@ -1,15 +1,20 @@
-package com.hustlemate.app.screens
+package com.example.hustlemate.ui.theme.Customers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.hustlemate.app.components.AppButton
-import com.hustlemate.app.components.AppTextField
-import com.hustlemate.app.ui.theme.*
+import androidx.navigation.compose.rememberNavController
+import com.example.hustlemate.components.AppButton
+import com.example.hustlemate.components.AppTextField
+import com.example.hustlemate.ui.theme.Background
+import com.example.hustlemate.ui.theme.HustleMateTheme
+import com.example.hustlemate.ui.theme.TextPrimary
+import com.example.hustlemate.ui.theme.auth.RegisterScreen
 
 @Composable
 fun AddProductScreen(navController: NavController) {
@@ -43,5 +48,14 @@ fun AddProductScreen(navController: NavController) {
             // TODO: save to database later
             navController.popBackStack()
         }
+    }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun AddProductScreenPreview() {
+    val navController = rememberNavController()
+
+    HustleMateTheme {
+        AddProductScreen(navController)
     }
 }

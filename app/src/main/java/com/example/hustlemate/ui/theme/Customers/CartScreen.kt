@@ -1,19 +1,18 @@
-package com.hustlemate.app.screens
+package com.example.hustlemate.ui.theme.shopping
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.*
-import androidx.compose.ui.graphics.Color
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-
-import com.hustlemate.app.components.*
-import com.hustlemate.app.ui.theme.*
+import androidx.navigation.compose.rememberNavController
+import com.example.hustlemate.components.AppButton
+import com.example.hustlemate.ui.theme.Background
+import com.example.hustlemate.ui.theme.HustleMateTheme
 
 @Composable
 fun CartScreen(navController: NavController) {
@@ -24,6 +23,7 @@ fun CartScreen(navController: NavController) {
             .padding(16.dp)
     ) {
 
+        // 🔥 SCREEN TITLE
         Text("Your Cart", style = MaterialTheme.typography.headlineSmall)
 
         Spacer(modifier = Modifier.height(12.dp))
@@ -47,5 +47,14 @@ fun CartScreen(navController: NavController) {
         AppButton("Proceed to Checkout") {
             navController.navigate("checkout")
         }
+    }
+}
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun CartScreenPreview() {
+    val navController = rememberNavController()
+
+    HustleMateTheme {
+        CartScreen(navController)
     }
 }
