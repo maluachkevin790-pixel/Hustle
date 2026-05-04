@@ -1,98 +1,126 @@
 package com.example.hustlemate.ui.theme.Customers
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.hustlemate.models.Product
-import com.example.hustlemate.ui.theme.HustleMateTheme
-import com.example.hustlemate.viewmodel.CartViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.example.hustlemate.models.Cart
+import com.example.hustlemate.models.Product
+import com.example.hustlemate.navigation.Routes
+import com.example.hustlemate.ui.theme.*
+import com.example.hustlemate.viewmodel.CartViewModel
 
+// ----------------------
+// MAIN SCREEN (ViewModel connected)
+// ----------------------
 @Composable
-fun CartScreen(cartViewModel: CartViewModel) {
+fun CartScreen(
+    navController: NavController,
+    cartViewModel: CartViewModel = viewModel()
+) {
+    CartContent(
+        items = cartViewModel.cartItems,
+        total = cartViewModel.getTotal(),
+        onCheckout = {
+            navController.navigate(Routes.CHECKOUT)
+        }
+    )
+}
 
-    val items = cartViewModel.cartItems
-
-    Column(modifier = Modifier.padding(16.dp)) {
+// ----------------------
+// PURE UI (Reusable)
+// ----------------------
+@Composable
+fun CartContent(
+    items: List<Cart>,
+    total: Double,
+    onCheckout: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .padding(16.dp)
+    ) {
 
         Text(
             text = "My Cart",
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            color = TextPrimary
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        LazyColumn {
+        // ✅ Empty state
+        if (items.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Your cart is empty",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = TextPrimary
+                )
+            }
+        } else {
+            // ✅ Proper scrolling list
+            LazyColumn(
+                modifier = Modifier.weight(1f)
+            ) {
+                items(items) { item ->
+                    Column(modifier = Modifier.padding(8.dp)) {
 
-            items(items) { item ->
+                        Text(
+                            text = item.product.name,
+                            color = TextPrimary
+                        )
 
-                Column(modifier = Modifier.padding(8.dp)) {
+                        Text(
+                            text = "Qty: ${item.quantity}",
+                            color = TextPrimary
+                        )
 
-                    Text(text = item.product.name)
-                    Text(text = "Qty: ${item.quantity}")
-                    Text(text = "KES ${item.product.price * item.quantity}")
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row {
-
-                        Button(onClick = {
-                            cartViewModel.decreaseQty(item.product.id)
-                        }) {
-                            Text("-")
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Button(onClick = {
-                            cartViewModel.increaseQty(item.product.id)
-                        }) {
-                            Text("+")
-                        }
-
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        Button(onClick = {
-                            cartViewModel.removeFromCart(item.product.id)
-                        }) {
-                            Text("Remove")
-                        }
+                        Text(
+                            text = "KES ${item.product.price * item.quantity}",
+                            color = TextPrimary
+                        )
                     }
+                    Divider()
                 }
-
-                Divider() // ✅ FIXED (instead of HorizontalDivider)
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Total: KES ${cartViewModel.getTotal()}",
-            style = MaterialTheme.typography.titleLarge
+            text = "Total: KES $total",
+            style = MaterialTheme.typography.titleMedium,
+            color = TextPrimary
         )
-    }
-}
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun CartScreenPreview() {
+        Spacer(modifier = Modifier.height(16.dp))
 
-    val cartViewModel: CartViewModel = viewModel()
-
-    // 🔥 sample preview data
-    cartViewModel.addToCart(
-        Product("1", "Shoes", 2500.0, "Nice shoes")
-    )
-    cartViewModel.addToCart(
-        Product("2", "Phone", 15000.0, "Smart phone")
-    )
-
-    HustleMateTheme {
-        CartScreen(cartViewModel)
+        Button(
+            onClick = onCheckout,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = SkyBlueDark,
+                contentColor = White
+            )
+        ) {
+            Text("Proceed to Checkout")
+        }
     }
 }

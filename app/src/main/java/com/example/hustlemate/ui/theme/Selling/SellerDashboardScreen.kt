@@ -1,74 +1,63 @@
-package com.hustlemate.app.screens
+package com.example.hustlemate.ui.theme.Selling
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.hustlemate.components.AppButton
-import com.example.hustlemate.ui.theme.Background
-import com.example.hustlemate.ui.theme.CardColor
-import com.example.hustlemate.ui.theme.HustleMateTheme
-import com.example.hustlemate.ui.theme.TextPrimary
-import com.example.hustlemate.ui.theme.TextSecondary
+
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
-fun SellerDashboardScreen(navController: NavController) {
+fun SellerDashboardScreen() {
 
-    val products = listOf("Shoes", "Phone", "Bag")
+    val db = FirebaseFirestore.getInstance()
+    var orders by remember { mutableStateOf(listOf<Pair<String, Map<String, Any>>>()) }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background)
-            .padding(16.dp)
-    ) {
+    LaunchedEffect(Unit) {
+        db.collection("orders")
+            .addSnapshotListener { snapshot, _ ->
+                if (snapshot != null) {
+                    orders = snapshot.documents.map {
+                        Pair(it.id, it.data ?: emptyMap())
+                    }
+                }
+            }
+    }
 
-        Text(
-            "Seller Dashboard",
-            style = MaterialTheme.typography.headlineMedium,
-            color = TextPrimary
-        )
+    Column(Modifier.padding(16.dp)) {
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Text("Seller Dashboard", style = MaterialTheme.typography.headlineMedium)
 
-        AppButton("Add New Product") {
-            navController.navigate("add_product")
-        }
+        orders.forEach { (id, order) ->
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Card(Modifier.fillMaxWidth().padding(8.dp)) {
+                Column(Modifier.padding(12.dp)) {
 
-        Text("Your Products:", color = TextSecondary)
+                    Text("Order ID: $id")
+                    Text("Total: KES ${order["total"]}")
+                    Text("Status: ${order["status"]}")
 
-        Spacer(modifier = Modifier.height(8.dp))
+                    Row {
 
-        products.forEach { product ->
+                        Button(onClick = {
+                            db.collection("orders").document(id)
+                                .update("status", "SHIPPED")
+                        }) {
+                            Text("Ship")
+                        }
 
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 6.dp),
-                colors = CardDefaults.cardColors(containerColor = CardColor)
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(product)
-                    Text("Tap to edit (future feature)", color = TextSecondary)
+                        Spacer(Modifier.width(8.dp))
+
+                        Button(onClick = {
+                            db.collection("orders").document(id)
+                                .update("status", "DELIVERED")
+                        }) {
+                            Text("Deliver")
+                        }
+                    }
                 }
             }
         }
     }
 }
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun SellerDashboardScreenPreview() {
-    val navController = rememberNavController()
-
-    HustleMateTheme {
-        SellerDashboardScreen(navController)
-    }
-}
-
