@@ -20,7 +20,7 @@ import com.example.hustlemate.ui.theme.*
 import com.example.hustlemate.viewmodel.CartViewModel
 
 // ----------------------
-// MAIN SCREEN (ViewModel connected)
+// MAIN SCREEN
 // ----------------------
 @Composable
 fun CartScreen(
@@ -37,7 +37,7 @@ fun CartScreen(
 }
 
 // ----------------------
-// PURE UI (Reusable)
+// UI CONTENT
 // ----------------------
 @Composable
 fun CartContent(
@@ -55,12 +55,11 @@ fun CartContent(
         Text(
             text = "My Cart",
             style = MaterialTheme.typography.headlineMedium,
-            color = TextPrimary
+            color = SkyBlueDark   // ✅ themed title
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        // ✅ Empty state
         if (items.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -71,33 +70,49 @@ fun CartContent(
                 Text(
                     text = "Your cart is empty",
                     style = MaterialTheme.typography.bodyLarge,
-                    color = TextPrimary
+                    color = TextSecondary   // softer tone
                 )
             }
         } else {
-            // ✅ Proper scrolling list
+
             LazyColumn(
                 modifier = Modifier.weight(1f)
             ) {
                 items(items) { item ->
-                    Column(modifier = Modifier.padding(8.dp)) {
 
-                        Text(
-                            text = item.product.name,
-                            color = TextPrimary
-                        )
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 6.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = White
+                        ),
+                        elevation = CardDefaults.cardElevation(4.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(12.dp)
+                        ) {
 
-                        Text(
-                            text = "Qty: ${item.quantity}",
-                            color = TextPrimary
-                        )
+                            Text(
+                                text = item.product.name,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = SkyBlueDark
+                            )
 
-                        Text(
-                            text = "KES ${item.product.price * item.quantity}",
-                            color = TextPrimary
-                        )
+                            Spacer(modifier = Modifier.height(4.dp))
+
+                            Text(
+                                text = "Qty: ${item.quantity}",
+                                color = TextPrimary
+                            )
+
+                            Text(
+                                text = "KES ${item.product.price * item.quantity}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextPrimary
+                            )
+                        }
                     }
-                    Divider()
                 }
             }
         }
@@ -106,21 +121,59 @@ fun CartContent(
 
         Text(
             text = "Total: KES $total",
-            style = MaterialTheme.typography.titleMedium,
-            color = TextPrimary
+            style = MaterialTheme.typography.titleLarge,
+            color = SkyBlueDark   // ✅ highlight total
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         Button(
             onClick = onCheckout,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = SkyBlueDark,
                 contentColor = White
             )
         ) {
-            Text("Proceed to Checkout")
+            Text(
+                text = "Proceed to Checkout",
+                style = MaterialTheme.typography.titleMedium
+            )
         }
+    }
+}
+
+// ----------------------
+// PREVIEWS (THEMED)
+// ----------------------
+@Preview(showBackground = true)
+@Composable
+fun CartPreview() {
+    HustleMateTheme {
+
+        val sampleItems = listOf(
+            Cart(Product("1", "Nike Air Max", 8500.0, ""), 2),
+            Cart(Product("2", "Adidas Hoodie", 4500.0, ""), 1)
+        )
+
+        CartContent(
+            items = sampleItems,
+            total = 21500.0,
+            onCheckout = {}
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun CartEmptyPreview() {
+    HustleMateTheme {
+        CartContent(
+            items = emptyList(),
+            total = 0.0,
+            onCheckout = {}
+        )
     }
 }

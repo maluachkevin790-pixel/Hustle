@@ -1,16 +1,17 @@
 package com.example.hustlemate.data.models
 
+import androidx.compose.runtime.mutableStateListOf
+import com.example.hustlemate.models.Product
+
 object CartManager {
 
-    data class Item(val name: String, val price: Double)
+    private val items = mutableStateListOf<Product>()
 
-    private val items = mutableListOf<Item>()
-
-    fun addItem(item: Item) {
-        items.add(item)
+    fun add(product: Product) {
+        items.add(product)
     }
 
-    fun getItems(): List<Item> = items
+    fun getItems(): List<Product> = items
 
     fun getTotal(): Double = items.sumOf { it.price }
 

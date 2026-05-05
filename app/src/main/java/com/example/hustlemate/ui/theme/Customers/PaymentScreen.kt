@@ -1,34 +1,33 @@
 package com.example.hustlemate.ui.theme.Customers
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.hustlemate.components.AppButton
 import com.example.hustlemate.data.models.CartManager
-import com.example.hustlemate.navigation.Routes
+import com.example.hustlemate.ui.theme.*
 import com.google.firebase.firestore.FirebaseFirestore
 
+// ----------------------
+// MAIN SCREEN (LOGIC)
+// ----------------------
 @Composable
 fun PaymentScreen(navController: NavController) {
 
     val db = FirebaseFirestore.getInstance()
+    val items = CartManager.getItems()
+    val total = CartManager.getTotal()
 
-    Column(Modifier.padding(16.dp)) {
+    PaymentContent(
+        total = total,
+        onPay = {
 
-        Text("Payment", fontSize = 24.sp)
-
-        Spacer(Modifier.height(20.dp))
-
-        AppButton("Pay Now") {
-
-            val items = CartManager.getItems()
-            val total = CartManager.getTotal()
-
-            if (items.isEmpty()) return@AppButton
+            if (items.isEmpty()) return@PaymentContent
 
             val order = hashMapOf(
                 "userId" to "demoUser",
@@ -45,10 +44,82 @@ fun PaymentScreen(navController: NavController) {
                 .addOnSuccessListener { doc ->
 
                     val orderId = doc.id
-
-                    // ✅ correct navigation
                     navController.navigate("order_confirmation/$orderId")
                 }
         }
+    )
+}
+
+// ----------------------
+// UI CONTENT (PREVIEWABLE)
+// ----------------------
+@Composable
+fun PaymentContent(
+    total: Double,
+    onPay: () -> Unit
+) {
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+
+        Column {
+
+            Text(
+                text = "Payment",
+                style = MaterialTheme.typography.headlineMedium,
+                color = SkyBlueDark
+            )
+
+            Spacer(Modifier.height(20.dp))
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = White),
+                elevation = CardDefaults.cardElevation(4.dp)
+            ) {
+                Column(Modifier.padding(16.dp)) {
+
+                    Text(
+                        text = "Total Amount",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+
+                    Spacer(Modifier.height(8.dp))
+
+                    Text(
+                        text = "KES $total",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = SkyBlueDark
+                    )
+                }
+            }
+        }
+
+        // Fixed: Removed unsupported parameters 'containerColor' and 'contentColor' from AppButton.
+        // AppButton only accepts 'text' and 'onClick' parameters.
+        AppButton(
+            text = "Pay Now",
+            onClick = onPay
+        )
+    }
+}
+
+// ----------------------
+// PREVIEW
+// ----------------------
+@Preview(showBackground = true)
+@Composable
+fun PaymentPreview() {
+    HustleMateTheme {
+        PaymentContent(
+            total = 12500.0,
+            onPay = {}
+        )
     }
 }
