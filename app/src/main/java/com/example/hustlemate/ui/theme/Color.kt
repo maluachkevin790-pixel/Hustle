@@ -22,3 +22,5 @@ val Success = Color(0xFF4CAF50)
 val Failed = Color(0xFFF44336) // General app background
 val CardColor = SkyBlue                 // Use SkyBlue for cards
 val Accent = SkyBlueDark
+val PrimaryBlue = Color(0xFF0288D1)
+val TextDark = Color(0xFF222222)

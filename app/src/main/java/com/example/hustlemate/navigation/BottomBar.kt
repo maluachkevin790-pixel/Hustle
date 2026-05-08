@@ -12,6 +12,7 @@ fun BottomBar(navController: NavController) {
         BottomNavItem.Home,
         BottomNavItem.Cart,
         BottomNavItem.Orders,
+        BottomNavItem.Profile,
         BottomNavItem.Seller
     )
 
@@ -26,8 +27,9 @@ fun BottomBar(navController: NavController) {
                 selected = currentRoute == item.route,
                 onClick = {
                     navController.navigate(item.route) {
-                        popUpTo("home") { inclusive = false }
+                        popUpTo(Routes.HOME) { saveState = true }
                         launchSingleTop = true
+                        restoreState = true
                     }
                 },
                 icon = {

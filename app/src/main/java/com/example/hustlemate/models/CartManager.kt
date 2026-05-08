@@ -1,7 +1,6 @@
 package com.example.hustlemate.data.models
 
 import androidx.compose.runtime.mutableStateListOf
-import com.example.hustlemate.models.Product
 
 object CartManager {
 

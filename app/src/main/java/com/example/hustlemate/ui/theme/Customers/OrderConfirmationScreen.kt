@@ -13,7 +13,9 @@ import com.example.hustlemate.data.models.CartManager
 import com.example.hustlemate.navigation.Routes
 import com.example.hustlemate.ui.theme.*
 import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
 import java.net.URL
 
 // ----------------------
@@ -29,7 +31,10 @@ fun OrderConfirmationScreen(orderId: String, navController: NavController) {
         while (true) {
 
             try {
-                val response = URL("http://10.0.2.2:3000/status").readText()
+                // Use withContext(Dispatchers.IO) to avoid NetworkOnMainThreadException
+                val response = withContext(Dispatchers.IO) {
+                    URL("http://10.0.2.2:3000/status").readText()
+                }
 
                 if (response.contains("SUCCESS")) {
 

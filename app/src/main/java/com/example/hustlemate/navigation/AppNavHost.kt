@@ -9,8 +9,11 @@ import androidx.navigation.navArgument
 import com.example.hustlemate.ui.theme.Customers.*
 import com.example.hustlemate.ui.theme.auth.*
 import com.example.hustlemate.ui.theme.core.SplashScreen
-import androidx.navigation.compose.composable
-import com.example.hustlemate.ui.theme.Customers.CartScreen
+import com.example.hustlemate.ui.theme.Selling.*
+import com.example.hustlemate.ui.theme.profille.EditProfileScreen
+import com.example.hustlemate.ui.theme.profille.ProfileScreen
+import com.example.hustlemate.ui.theme.profille.SettingsScreen
+import com.example.hustlemate.ui.theme.Customers.CategoryProductsScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -20,30 +23,66 @@ fun AppNavHost(navController: NavHostController) {
         startDestination = Routes.SPLASH
     ) {
 
+        // 🔐 AUTH
         composable(Routes.SPLASH) { SplashScreen(navController) }
         composable(Routes.LOGIN) { LoginScreen(navController) }
         composable(Routes.REGISTER) { RegisterScreen(navController) }
 
+        // 🏠 MAIN
         composable(Routes.HOME) { HomeScreen(navController) }
+
+        // 🛍️ PRODUCT
+        composable(
+            route = Routes.PRODUCT_DETAILS,
+            arguments = listOf(navArgument("productId") { type = NavType.StringType })
+        ) { 
+            ProductDetailsScreen(navController)
+        }
+
+        // 🛒 CART FLOW
         composable(Routes.CART) { CartScreen(navController) }
+        composable(Routes.CHECKOUT) { CheckoutScreen(navController) }
         composable(Routes.PAYMENT) { PaymentScreen(navController) }
 
-        // ✅ FIXED: declare argument
+        // 💳 ORDER CONFIRMATION (IMPORTANT)
         composable(
             route = Routes.ORDER_CONFIRMATION,
-            arguments = listOf(
-                navArgument("orderId") {
-                    type = NavType.StringType
-                }
-            )
+            arguments = listOf(navArgument("orderId") { type = NavType.StringType })
         ) { backStackEntry ->
 
-            val orderId =
-                backStackEntry.arguments?.getString("orderId") ?: ""
-
+            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
             OrderConfirmationScreen(orderId, navController)
         }
 
+        // 📦 ORDERS
         composable(Routes.MY_ORDERS) { MyOrdersScreen() }
+
+        // 🔍 SEARCH + WISHLIST
+        composable(Routes.SEARCH) { SearchScreen(navController) }
+        composable(Routes.WISHLIST) { WishlistScreen() }
+
+        // 👤 PROFILE
+        composable(Routes.PROFILE) { ProfileScreen(navController) }
+        composable(Routes.EDIT_PROFILE) { EditProfileScreen(navController) }
+        composable(Routes.SETTINGS) { SettingsScreen(navController) }
+
+        // 🧑‍💼 SELLER
+        composable(Routes.ADD_PRODUCT) { AddProductScreen(navController) }
+        composable(Routes.SELLER_DASHBOARD) { SellerDashboardScreen(navController) }
+
+        composable(
+            "category/{categoryName}"
+        ) { backStackEntry ->
+
+            val categoryName =
+                backStackEntry.arguments
+                    ?.getString("categoryName")
+                    ?: ""
+
+            CategoryProductsScreen(
+                navController,
+                categoryName
+            )
+        }
     }
 }

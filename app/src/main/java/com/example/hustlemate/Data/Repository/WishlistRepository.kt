@@ -1,6 +1,6 @@
 package com.example.hustlemate.data.repository
 
-import com.example.hustlemate.models.Product
+import com.example.hustlemate.data.models.Product
 import com.google.firebase.firestore.FirebaseFirestore
 
 object WishlistRepository {

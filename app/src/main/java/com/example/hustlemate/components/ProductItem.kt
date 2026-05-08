@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.hustlemate.models.Product
+import com.example.hustlemate.data.models.Product
 import com.example.hustlemate.ui.theme.*
 
 @Composable

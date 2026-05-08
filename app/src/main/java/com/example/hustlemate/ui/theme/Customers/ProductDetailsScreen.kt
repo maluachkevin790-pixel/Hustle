@@ -2,270 +2,193 @@ package com.example.hustlemate.ui.theme.Customers
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.LocalShipping
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
-import com.example.hustlemate.components.AppButton
-import com.example.hustlemate.data.getSampleProducts
+import com.example.hustlemate.data.models.Product
 import com.example.hustlemate.navigation.Routes
 import com.example.hustlemate.ui.theme.*
 import com.example.hustlemate.viewmodel.CartViewModel
+import com.google.firebase.firestore.FirebaseFirestore
 
-// ----------------------
-// REAL SCREEN
-// ----------------------
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProductDetailsScreen(
     navController: NavController,
-    productId: String,
     cartViewModel: CartViewModel = viewModel()
 ) {
+    val db = FirebaseFirestore.getInstance()
+    val productId = navController.currentBackStackEntry?.arguments?.getString("productId") ?: ""
 
-    val product = getSampleProducts().find { it.id == productId }
+    var product by remember { mutableStateOf<Product?>(null) }
+    var loading by remember { mutableStateOf(true) }
 
-    var quantity by remember { mutableStateOf(1) }
-    var isWishlisted by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background)
-            .padding(16.dp)
-    ) {
-
-        if (product == null) {
-
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("Product not found", color = TextPrimary)
-            }
-
-        } else {
-
-            // 🖼 IMAGE
-            AsyncImage(
-                model = "https://via.placeholder.com/600x400.png",
-                contentDescription = product.name,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(SkyBlueDark.copy(alpha = 0.15f))
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            // ❤️ Title + Wishlist
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Text(
-                    text = product.name,
-                    style = MaterialTheme.typography.headlineSmall,
-                    modifier = Modifier.weight(1f),
-                    color = TextPrimary
+    LaunchedEffect(Unit) {
+        db.collection("products").document(productId).get()
+            .addOnSuccessListener { doc ->
+                product = Product(
+                    id = doc.id,
+                    name = doc.getString("name") ?: "",
+                    description = doc.getString("description") ?: "",
+                    price = doc.getDouble("price") ?: 0.0,
+                    imageUrl = doc.getString("imageUrl") ?: ""
                 )
+                loading = false
+            }
+            .addOnFailureListener { loading = false }
+    }
 
-                IconButton(
-                    onClick = { isWishlisted = !isWishlisted }
+    if (loading) {
+        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator(color = SkyBlueDark)
+        }
+        return
+    }
+
+    val currentProduct = product ?: return
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = { Text("Details", color = White) },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, null, tint = White)
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = SkyBlueDark)
+            )
+        },
+        bottomBar = {
+            Surface(shadowElevation = 8.dp, color = White) {
+                Row(
+                    modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Icon(
-                        imageVector = if (isWishlisted)
-                            Icons.Default.Favorite
-                        else Icons.Default.FavoriteBorder,
-                        contentDescription = "Wishlist",
-                        tint = if (isWishlisted) Color.Red else SkyBlueDark
-                    )
-                }
-            }
-
-            // ⭐ Ratings
-            Row(verticalAlignment = Alignment.CenterVertically) {
-
-                repeat(5) { index ->
-                    Icon(
-                        imageVector = Icons.Default.Star,
-                        contentDescription = null,
-                        tint = if (index < 4) Color(0xFFFFC107) else Color.LightGray,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
-
-                Spacer(modifier = Modifier.width(6.dp))
-
-                Text("4.0", color = TextPrimary)
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 💰 Price
-            Text(
-                text = "KES ${product.price}",
-                style = MaterialTheme.typography.titleLarge,
-                color = SkyBlueDark,
-                fontWeight = FontWeight.Bold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            // 📝 Description
-            Text(
-                text = product.description,
-                color = TextPrimary
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // ➕ Quantity
-            Row(verticalAlignment = Alignment.CenterVertically) {
-
-                Text("Quantity:", color = TextPrimary)
-
-                Spacer(modifier = Modifier.width(12.dp))
-
-                Button(onClick = { if (quantity > 1) quantity-- }) {
-                    Text("-")
-                }
-
-                Text(
-                    text = "$quantity",
-                    modifier = Modifier.padding(horizontal = 12.dp),
-                    color = TextPrimary
-                )
-
-                Button(onClick = { quantity++ }) {
-                    Text("+")
-                }
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            // 🔥 ACTIONS
-            Column {
-
-                AppButton(text = "Add to Cart") {
-                    repeat(quantity) {
-                        cartViewModel.addToCart(product)
+                    OutlinedButton(
+                        onClick = { /* Wishlist logic */ },
+                        modifier = Modifier.size(50.dp),
+                        shape = RoundedCornerShape(4.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        Icon(Icons.Default.FavoriteBorder, null, tint = SkyBlueDark)
                     }
-                    navController.navigate(Routes.CART)
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                AppButton(text = "Buy Now") {
-                    repeat(quantity) {
-                        cartViewModel.addToCart(product)
+                    Button(
+                        onClick = {
+                            cartViewModel.addToCart(currentProduct)
+                            navController.navigate(Routes.CART)
+                        },
+                        modifier = Modifier.weight(1f).height(50.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = SkyBlueDark),
+                        shape = RoundedCornerShape(4.dp)
+                    ) {
+                        Text("ADD TO CART", fontWeight = FontWeight.Bold)
                     }
-                    navController.navigate(Routes.CHECKOUT)
                 }
             }
         }
-    }
-}
-
-// ----------------------
-// PREVIEW (FIXED - NO VIEWMODEL)
-// ----------------------
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun ProductDetailsPreview() {
-
-    val navController = rememberNavController()
-    val fakeProduct = getSampleProducts().firstOrNull()
-
-    HustleMateTheme {
-
-        if (fakeProduct != null) {
-
-            ProductDetailsContentPreview(
-                product = fakeProduct
-            )
-
-        } else {
-            Text("No sample product found")
-        }
-    }
-}
-
-// ----------------------
-// PREVIEW UI ONLY (SAFE)
-// ----------------------
-@Composable
-fun ProductDetailsContentPreview(product: com.example.hustlemate.models.Product) {
-
-    var quantity by remember { mutableStateOf(1) }
-    var isWishlisted by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Background)
-            .padding(16.dp)
-    ) {
-
-        AsyncImage(
-            model = "https://via.placeholder.com/600x400.png",
-            contentDescription = product.name,
+    ) { padding ->
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(240.dp)
-                .clip(RoundedCornerShape(16.dp))
-                .background(SkyBlueDark.copy(alpha = 0.15f))
-        )
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .background(Background)
+                .padding(padding)
+                .verticalScroll(rememberScrollState())
         ) {
-
-            Text(
-                text = product.name,
-                style = MaterialTheme.typography.headlineSmall,
-                modifier = Modifier.weight(1f),
-                color = TextPrimary
+            // 🖼 Image Section
+            AsyncImage(
+                model = currentProduct.imageUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxWidth().height(320.dp).background(White),
+                contentScale = ContentScale.Fit
             )
 
-            IconButton(onClick = { isWishlisted = !isWishlisted }) {
-                Icon(
-                    imageVector = if (isWishlisted)
-                        Icons.Default.Favorite
-                    else Icons.Default.FavoriteBorder,
-                    contentDescription = "Wishlist"
+            // 🏷 Info Section
+            Column(modifier = Modifier.background(White).padding(16.dp).fillMaxWidth()) {
+                Text(currentProduct.name, fontSize = 18.sp, color = TextPrimary)
+                Spacer(Modifier.height(8.dp))
+                Text("KSh ${currentProduct.price}", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+                
+                // Ratings Row
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 8.dp)) {
+                    repeat(4) { Icon(Icons.Default.Star, null, tint = Color(0xFFFFC107), modifier = Modifier.size(16.dp)) }
+                    Icon(Icons.Default.Star, null, tint = Color.LightGray, modifier = Modifier.size(16.dp))
+                    Text("(24 reviews)", fontSize = 12.sp, color = SkyBlueDark, modifier = Modifier.padding(start = 4.dp))
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            // 📦 Delivery Info
+            DetailSectionCard(title = "DELIVERY & RETURNS") {
+                Column(modifier = Modifier.padding(12.dp)) {
+                    DeliveryInfoRow(Icons.Default.LocalShipping, "Standard Delivery", "Scheduled between 24 Oct and 26 Oct")
+                    HorizontalDivider(Modifier.padding(vertical = 8.dp), thickness = 0.5.dp)
+                    DeliveryInfoRow(Icons.Default.VerifiedUser, "Return Policy", "Free return within 15 days for official stores")
+                }
+            }
+
+            Spacer(Modifier.height(8.dp))
+
+            // 📝 Description Section
+            DetailSectionCard(title = "PRODUCT DETAILS") {
+                Text(
+                    currentProduct.description,
+                    modifier = Modifier.padding(12.dp),
+                    fontSize = 14.sp,
+                    color = TextSecondary,
+                    lineHeight = 20.sp
                 )
             }
+
+            Spacer(Modifier.height(100.dp)) // Space for bottom bar
         }
+    }
+}
 
-        Spacer(modifier = Modifier.height(8.dp))
-
+@Composable
+fun DetailSectionCard(title: String, content: @Composable () -> Unit) {
+    Column(modifier = Modifier.fillMaxWidth().background(White)) {
         Text(
-            text = "KES ${product.price}",
-            color = SkyBlueDark,
-            fontWeight = FontWeight.Bold
+            title,
+            modifier = Modifier.padding(16.dp, 12.dp),
+            fontWeight = FontWeight.Bold,
+            fontSize = 13.sp,
+            color = Color.Gray
         )
+        HorizontalDivider(thickness = 0.5.dp, color = Color.LightGray)
+        content()
+    }
+}
 
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(product.description, color = TextPrimary)
+@Composable
+fun DeliveryInfoRow(icon: ImageVector, title: String, subtitle: String) {
+    Row(verticalAlignment = Alignment.Top) {
+        Icon(icon, null, modifier = Modifier.size(20.dp), tint = SkyBlueDark)
+        Spacer(Modifier.width(12.dp))
+        Column {
+            Text(title, fontWeight = FontWeight.Bold, fontSize = 13.sp)
+            Text(subtitle, fontSize = 12.sp, color = Color.Gray)
+        }
     }
 }

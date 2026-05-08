@@ -3,7 +3,7 @@ package com.example.hustlemate.viewmodel
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.example.hustlemate.models.Cart
-import com.example.hustlemate.models.Product
+import com.example.hustlemate.data.models.Product
 
 class CartViewModel : ViewModel() {
 
